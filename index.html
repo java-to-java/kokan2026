@@ -336,6 +336,7 @@ function el(tag, attrs, ...children) {
   if (attrs) Object.entries(attrs).forEach(([k,v]) => {
     if (k==="class") e.className=v;
     else if (k.startsWith("on")) e.addEventListener(k.slice(2).toLowerCase(), v);
+    else if (k==="disabled") e.disabled=!!v;
     else e.setAttribute(k, v);
   });
   children.flat().forEach(c => {
