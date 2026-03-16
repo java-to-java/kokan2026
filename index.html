@@ -552,21 +552,41 @@ function renderNav() {
 }
 
 function renderStep1() {
-  const mobileValid = /^[0-9]{10}$/.test(state.form.mobile.trim());
-  const mobileHasInput = state.form.mobile.trim().length > 0;
-  const ecValid = state.form.emergencyContact.trim() === "" || /^[0-9]{10}$/.test(state.form.emergencyContact.trim());
-  const ecHasInput = state.form.emergencyContact.trim().length > 0;
+  function updateHint(id, value, isPhone) {
+    const hint = document.getElementById(id);
+    if (!hint) return;
+    const trimmed = value.trim();
+    if (!isPhone) { hint.textContent = ""; return; }
+    if (trimmed.length === 0) { hint.textContent = ""; hint.style.color = ""; return; }
+    if (/^[0-9]{10}$/.test(trimmed)) {
+      hint.textContent = "✓ Valid";
+      hint.style.color = "#388E3C";
+    } else {
+      hint.textContent = "⚠ Please enter a valid 10-digit number";
+      hint.style.color = "#D32F2F";
+    }
+  }
 
-  function makeInput(placeholder, value, onInput, type="text", maxlen=null) {
-    const inp = el("input", {type, placeholder, value});
+  function makeInput(placeholder, value, stateKey, type, maxlen, hintId, isPhone) {
+    const inp = el("input", {type: type||"text", placeholder, value});
     if (maxlen) inp.setAttribute("maxlength", maxlen);
     inp.addEventListener("input", e => {
-      onInput(e.target.value);
+      const raw = e.target.value;
+      const cleaned = isPhone ? raw.replace(/[^0-9]/g, "") : raw;
+      // Keep cursor position correct for phone inputs
+      if (isPhone && cleaned !== raw) {
+        const pos = e.target.selectionStart - (raw.length - cleaned.length);
+        e.target.value = cleaned;
+        e.target.setSelectionRange(pos, pos);
+      }
+      state.form[stateKey] = cleaned;
+      if (hintId) updateHint(hintId, cleaned, isPhone);
       const btn = document.querySelector(".btn-primary");
       if (btn) btn.disabled = !canNext();
-      render();
     });
-    inp.addEventListener("keydown", e => { if (e.key==="Enter" && canNext()) { state.step++; render(); } });
+    inp.addEventListener("keydown", e => {
+      if (e.key === "Enter" && canNext()) { state.step++; render(); }
+    });
     return inp;
   }
 
@@ -577,26 +597,28 @@ function renderStep1() {
     el("div",{style:"display:flex;flex-direction:column;gap:14px"},
       el("div",{},
         el("label",{style:"font-size:12px;font-weight:600;color:var(--muted);display:block;margin-bottom:5px"},"FULL NAME *"),
-        makeInput("Enter your full name", state.form.name, v => state.form.name = v)
+        makeInput("Enter your full name", state.form.name, "name", "text", null, null, false)
       ),
       el("div",{},
         el("label",{style:"font-size:12px;font-weight:600;color:var(--muted);display:block;margin-bottom:5px"},"MOBILE NUMBER *"),
-        makeInput("10-digit number e.g. 9876543210", state.form.mobile, v => state.form.mobile = v.replace(/[^0-9]/g,""), "tel", "10"),
-        mobileHasInput && !mobileValid
-          ? el("div",{style:"font-size:11px;color:#D32F2F;margin-top:4px"},"⚠ Please enter a valid 10-digit mobile number")
-          : mobileValid
-            ? el("div",{style:"font-size:11px;color:#388E3C;margin-top:4px"},"✓ Valid")
-            : el("span",{})
+        makeInput("10-digit number e.g. 9876543210", state.form.mobile, "mobile", "tel", "10", "hint-mobile", true),
+        el("div",{id:"hint-mobile", style:"font-size:11px;margin-top:4px;min-height:16px"},
+          state.form.mobile.trim().length === 0 ? "" :
+          /^[0-9]{10}$/.test(state.form.mobile.trim())
+            ? Object.assign(document.createElement("span"), {textContent:"✓ Valid", style:"color:#388E3C"})
+            : Object.assign(document.createElement("span"), {textContent:"⚠ Please enter a valid 10-digit number", style:"color:#D32F2F"})
+        )
       ),
       el("div",{},
         el("label",{style:"font-size:12px;font-weight:600;color:var(--muted);display:block;margin-bottom:3px"},"EMERGENCY CONTACT NUMBER"),
         el("span",{style:"font-size:11px;color:var(--muted);display:block;margin-bottom:5px"},"Mobile number of someone not on this trip (optional)"),
-        makeInput("10-digit number e.g. 9123456789", state.form.emergencyContact, v => state.form.emergencyContact = v.replace(/[^0-9]/g,""), "tel", "10"),
-        ecHasInput && !ecValid
-          ? el("div",{style:"font-size:11px;color:#D32F2F;margin-top:4px"},"⚠ Please enter a valid 10-digit number")
-          : ecHasInput && ecValid
-            ? el("div",{style:"font-size:11px;color:#388E3C;margin-top:4px"},"✓ Valid")
-            : el("span",{})
+        makeInput("10-digit number e.g. 9123456789", state.form.emergencyContact, "emergencyContact", "tel", "10", "hint-ec", true),
+        el("div",{id:"hint-ec", style:"font-size:11px;margin-top:4px;min-height:16px"},
+          state.form.emergencyContact.trim().length === 0 ? "" :
+          /^[0-9]{10}$/.test(state.form.emergencyContact.trim())
+            ? Object.assign(document.createElement("span"), {textContent:"✓ Valid", style:"color:#388E3C"})
+            : Object.assign(document.createElement("span"), {textContent:"⚠ Please enter a valid 10-digit number", style:"color:#D32F2F"})
+        )
       )
     )
   );
