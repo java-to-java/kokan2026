@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>March Trip — Meal Preferences</title>
+<title>ALYF Kokan Trip 2026 — Meal Preferences</title>
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
   :root{
@@ -13,10 +13,34 @@
     --border:#D0DCE8;--alt:#F7FAFD;
     --text:#1a1a1a;--muted:#666;
     --radius:12px;--radius-sm:8px;
+    --saffron:#E87722;--saffron-light:#FEF0E6;
   }
   body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;
     background:#F0F4F8;min-height:100vh;color:var(--text);font-size:15px}
   .shell{max-width:560px;margin:0 auto;padding:16px 12px 60px}
+
+  /* ── Splash ── */
+  .splash{position:relative;border-radius:var(--radius);overflow:hidden;margin-bottom:14px;min-height:320px;display:flex;flex-direction:column;justify-content:flex-end}
+  .splash-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+  .splash-overlay{position:absolute;inset:0;background:linear-gradient(to bottom, rgba(0,0,0,0.08) 0%, rgba(10,30,60,0.75) 55%, rgba(10,20,50,0.92) 100%)}
+  .splash-content{position:relative;z-index:2;padding:24px 20px 22px;color:#fff;text-align:center}
+  .splash-org{font-size:11px;font-weight:700;letter-spacing:1.5px;opacity:.85;text-transform:uppercase;margin-bottom:6px}
+  .splash-title{font-size:26px;font-weight:800;line-height:1.2;margin-bottom:4px}
+  .splash-subtitle{font-size:13px;opacity:.8;margin-bottom:16px}
+  .splash-pills{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-bottom:20px}
+  .splash-pill{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.25);border-radius:99px;padding:4px 12px;font-size:12px;backdrop-filter:blur(4px)}
+  .splash-pill.gold{background:rgba(232,119,34,.7);border-color:rgba(232,119,34,.5)}
+  .btn-splash{width:100%;padding:14px;border:none;border-radius:var(--radius-sm);background:var(--saffron);color:#fff;font-size:16px;font-weight:700;cursor:pointer;transition:opacity .15s;letter-spacing:.3px}
+  .btn-splash:hover{opacity:.88}
+  .alyf-logo-wrap{margin-bottom:14px;text-align:center}
+  .alyf-emblem{width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.15);border:2px solid rgba(255,255,255,.4);display:inline-flex;align-items:center;justify-content:center;font-size:26px;backdrop-filter:blur(4px)}
+
+  /* ── Input validation states ── */
+  input.valid{border-color:#3A8A3A !important}
+  input.invalid{border-color:#C0392B !important}
+  .field-msg{font-size:11px;margin-top:4px;min-height:14px}
+  .field-msg.ok{color:#3A8A3A}
+  .field-msg.err{color:#C0392B}
 
   /* ── Progress ── */
   .prog-wrap{margin-bottom:20px}
@@ -33,9 +57,9 @@
   .step-sub{font-size:13px;color:var(--muted);text-align:center;margin-bottom:22px}
 
   /* ── Inputs ── */
-  input[type=text]{width:100%;padding:12px 14px;border:1.5px solid var(--border);
-    border-radius:var(--radius-sm);font-size:15px;outline:none;transition:border .2s}
-  input[type=text]:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(46,117,182,.12)}
+  input[type=text],input[type=tel]{width:100%;padding:12px 14px;border:1.5px solid var(--border);
+    border-radius:var(--radius-sm);font-size:15px;outline:none;transition:border .2s;font-family:inherit}
+  input[type=text]:focus,input[type=tel]:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(46,117,182,.12)}
 
   /* ── Option cards ── */
   .opt-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:22px}
@@ -58,8 +82,21 @@
     justify-content:space-between;align-items:center;gap:6px;transition:all .12s}
   .item-btn:hover{border-color:var(--blue);background:var(--light-blue)}
   .item-btn.sel{border-color:var(--blue);background:var(--light-blue)}
+  .item-btn.thali{border-color:#C9A227;background:#FFFBEF}
+  .item-btn.thali:hover{border-color:#A07818;background:#FFF3CC}
+  .item-btn.thali.sel{border-color:#A07818;background:#FFF3CC}
+  .item-btn.thali .item-name{color:#7A5C00;font-weight:600}
+  .item-btn.thali .item-price{color:#A07818}
+  .item-btn.thali .chk{border-color:#C9A227}
+  .item-btn.thali.sel .chk{background:#C9A227;border-color:#C9A227}
+  .item-btn.thali.sel .item-name{color:#5A4200}
+  .thali-badge{display:inline-block;font-size:9px;font-weight:700;
+    background:#C9A227;color:#fff;border-radius:4px;padding:1px 5px;
+    margin-left:5px;vertical-align:middle;letter-spacing:.4px}
+  .section-head.thali-head{color:#7A5C00;border-bottom-color:#C9A227}
   .item-name{font-size:12px;line-height:1.3;color:var(--text)}
   .item-btn.sel .item-name{color:var(--blue);font-weight:600}
+  .item-btn.thali.sel .item-name{color:#5A4200}
   .item-price{font-size:11px;color:var(--muted);white-space:nowrap}
   .item-btn.sel .item-price{color:var(--blue)}
   .chk{width:17px;height:17px;border-radius:50%;border:1.5px solid var(--border);
@@ -133,7 +170,7 @@
 
 <script>
 // ─── CONFIGURATION — REPLACE THIS AFTER DEPLOYING APPS SCRIPT ───────────────
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw36arHVSl6rUebq12X1VGQtM656mVM4nZAj2XsYf2pOe6BIosvnebTv4pnH-G8bZJv/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzParGLHqi6aB6Jcuu68kp7gSfOPmfaaPaH_t611nslNvZAUFb4Gb4bPAOOzTXZOg_Y/exec";
 // ────────────────────────────────────────────────────────────────────────────
 
 const BREAKFAST_VEG = [
@@ -261,9 +298,9 @@ const DRINKS = [
 
 // ─── State ───────────────────────────────────────────────────────────────────
 let state = {
-  screen: "home",   // home | form | done | error
-  step: 1,          // 1=name 2=dietary 3=drinks 4-8=meals 9=review
-  form: {name:"", dietary:"", drinks:[], d1_dinner:[], d2_breakfast:[], d2_lunch:[], d2_dinner:[], d3_breakfast:[]},
+  screen: "splash",  // splash | home | form | done | error
+  step: 1,
+  form: {name:"", mobile:"", emergencyContact:"", dietary:"", drinks:[], d1_dinner:[], d2_breakfast:[], d2_lunch:[], d2_dinner:[], d3_breakfast:[]},
   saving: false,
 };
 const TOTAL = 9;
@@ -276,7 +313,7 @@ function groupBy(arr, key) {
 }
 function canNext() {
   const {step, form} = state;
-  if (step===1) return form.name.trim().length >= 2;
+  if (step===1) return form.name.trim().length >= 2 && /^[0-9]{10}$/.test(form.mobile.trim());
   if (step===2) return !!form.dietary;
   if (step===3) return form.drinks.length > 0;
   return true;
@@ -346,13 +383,143 @@ function el(tag, attrs, ...children) {
   return e;
 }
 
+function renderSplash() {
+  const svg = `<svg viewBox="0 0 560 260" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;border-radius:0 0 16px 16px">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FF7043"/>
+      <stop offset="40%" stop-color="#FF9A3C"/>
+      <stop offset="75%" stop-color="#FFD580"/>
+      <stop offset="100%" stop-color="#FFE9B0"/>
+    </linearGradient>
+    <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1A6B8A"/>
+      <stop offset="100%" stop-color="#0D4A63"/>
+    </linearGradient>
+    <linearGradient id="sun" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFE066"/>
+      <stop offset="100%" stop-color="#FF9A3C"/>
+    </linearGradient>
+    <linearGradient id="hill1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#2E7D32"/>
+      <stop offset="100%" stop-color="#1B5E20"/>
+    </linearGradient>
+    <linearGradient id="hill2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#388E3C"/>
+      <stop offset="100%" stop-color="#2E7D32"/>
+    </linearGradient>
+    <linearGradient id="sand" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F5D98B"/>
+      <stop offset="100%" stop-color="#E8C46A"/>
+    </linearGradient>
+  </defs>
+  <!-- Sky -->
+  <rect width="560" height="260" fill="url(#sky)"/>
+  <!-- Sun -->
+  <circle cx="280" cy="118" r="32" fill="url(#sun)" opacity="0.95"/>
+  <circle cx="280" cy="118" r="38" fill="#FFD580" opacity="0.25"/>
+  <!-- Sun glitter on water -->
+  <ellipse cx="280" cy="185" rx="60" ry="8" fill="#FFD580" opacity="0.35"/>
+  <!-- Distant hills left -->
+  <path d="M0,150 Q40,100 90,120 Q130,100 170,125 L170,180 L0,180 Z" fill="url(#hill1)" opacity="0.7"/>
+  <!-- Distant hills right -->
+  <path d="M390,130 Q430,95 480,115 Q510,100 560,120 L560,180 L390,180 Z" fill="url(#hill1)" opacity="0.7"/>
+  <!-- Mid hills -->
+  <path d="M150,155 Q200,110 260,138 Q300,115 360,140 Q400,120 450,148 L450,185 L150,185 Z" fill="url(#hill2)" opacity="0.85"/>
+  <!-- Sea -->
+  <rect x="0" y="180" width="560" height="80" fill="url(#sea)"/>
+  <!-- Sea shimmer lines -->
+  <line x1="30" y1="192" x2="90" y2="192" stroke="#5BB8D4" stroke-width="1.2" opacity="0.4"/>
+  <line x1="120" y1="198" x2="200" y2="198" stroke="#5BB8D4" stroke-width="1" opacity="0.3"/>
+  <line x1="360" y1="194" x2="430" y2="194" stroke="#5BB8D4" stroke-width="1.2" opacity="0.4"/>
+  <line x1="460" y1="200" x2="530" y2="200" stroke="#5BB8D4" stroke-width="1" opacity="0.3"/>
+  <line x1="50" y1="210" x2="140" y2="210" stroke="#5BB8D4" stroke-width="0.8" opacity="0.25"/>
+  <line x1="400" y1="212" x2="490" y2="212" stroke="#5BB8D4" stroke-width="0.8" opacity="0.25"/>
+  <!-- Beach sand -->
+  <path d="M0,222 Q140,210 280,218 Q420,226 560,215 L560,260 L0,260 Z" fill="url(#sand)"/>
+  <!-- Waves -->
+  <path d="M0,222 Q70,216 140,222 Q210,228 280,222 Q350,216 420,222 Q490,228 560,220" fill="none" stroke="#A8D8EA" stroke-width="2" opacity="0.6"/>
+  <path d="M0,228 Q60,224 130,229 Q200,234 270,228 Q340,222 410,228 Q480,234 560,226" fill="none" stroke="#A8D8EA" stroke-width="1.2" opacity="0.35"/>
+  <!-- Fishing boat -->
+  <path d="M340,196 Q355,190 370,196 L368,202 Q355,205 342,202 Z" fill="#8D4E26"/>
+  <path d="M355,196 L355,182" stroke="#5C3317" stroke-width="1.5"/>
+  <path d="M355,182 L370,190 L355,190 Z" fill="#D32F2F" opacity="0.85"/>
+  <!-- Small boat left -->
+  <path d="M80,200 Q90,196 100,200 L99,204 Q90,207 81,204 Z" fill="#5C3317"/>
+  <path d="M90,200 L90,191" stroke="#3E2208" stroke-width="1.2"/>
+  <path d="M90,191 L99,196 L90,196 Z" fill="#FF8F00" opacity="0.8"/>
+  <!-- Left coconut palm (trunk) -->
+  <path d="M68,260 Q72,220 65,185 Q63,170 70,155" stroke="#5D4037" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <!-- Left palm leaves -->
+  <path d="M70,155 Q50,135 30,140" stroke="#2E7D32" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+  <path d="M70,155 Q55,130 60,112" stroke="#388E3C" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M70,155 Q85,128 100,132" stroke="#2E7D32" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+  <path d="M70,155 Q90,140 105,148" stroke="#43A047" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M70,155 Q45,148 28,158" stroke="#388E3C" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <!-- Coconuts left -->
+  <circle cx="74" cy="158" r="4" fill="#8B4513"/>
+  <circle cx="68" cy="162" r="3.5" fill="#7A3B10"/>
+  <!-- Right coconut palm -->
+  <path d="M490,260 Q486,218 494,182 Q497,168 491,152" stroke="#5D4037" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <!-- Right palm leaves -->
+  <path d="M491,152 Q510,132 530,138" stroke="#2E7D32" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+  <path d="M491,152 Q506,127 502,110" stroke="#388E3C" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M491,152 Q475,128 460,133" stroke="#2E7D32" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+  <path d="M491,152 Q472,140 458,148" stroke="#43A047" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M491,152 Q515,146 532,156" stroke="#388E3C" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <!-- Coconuts right -->
+  <circle cx="488" cy="156" r="4" fill="#8B4513"/>
+  <circle cx="494" cy="160" r="3.5" fill="#7A3B10"/>
+  <!-- Lighthouse -->
+  <rect x="258" y="148" width="14" height="30" fill="#ECEFF1" rx="2"/>
+  <path d="M255,148 L272,148 L269,140 L261,140 Z" fill="#D32F2F"/>
+  <rect x="260" y="140" width="10" height="4" fill="#B71C1C" rx="1"/>
+  <circle cx="265" cy="138" r="3" fill="#FFF59D" opacity="0.9"/>
+  <!-- Light beam -->
+  <path d="M265,138 L240,158 L260,155 Z" fill="#FFF59D" opacity="0.18"/>
+  <!-- Birds -->
+  <path d="M150,105 Q155,100 160,105" stroke="#4E342E" stroke-width="1.5" fill="none"/>
+  <path d="M162,98 Q168,93 174,98" stroke="#4E342E" stroke-width="1.5" fill="none"/>
+  <path d="M178,108 Q183,104 188,108" stroke="#4E342E" stroke-width="1.5" fill="none"/>
+  <path d="M370,95 Q375,90 380,95" stroke="#4E342E" stroke-width="1.5" fill="none"/>
+  <path d="M390,103 Q395,98 400,103" stroke="#4E342E" stroke-width="1.5" fill="none"/>
+</svg>`;
+
+  const wrap = document.createElement("div");
+  wrap.style.cssText = "background:#1B3F6B;min-height:100vh;display:flex;flex-direction:column";
+
+  const svgWrap = document.createElement("div");
+  svgWrap.innerHTML = svg;
+  wrap.appendChild(svgWrap);
+
+  const body = el("div",{style:"padding:24px 20px 40px;text-align:center;flex:1;display:flex;flex-direction:column;align-items:center"},
+    el("div",{style:"background:rgba(255,255,255,0.1);border-radius:99px;padding:5px 16px;font-size:11px;font-weight:700;color:#FFD580;letter-spacing:2px;margin-bottom:14px;display:inline-block"},"ALYF"),
+    el("div",{style:"font-size:22px;font-weight:800;color:#fff;line-height:1.25;margin-bottom:6px"},
+      "Avinash Lagad Youth Foundation"
+    ),
+    el("div",{style:"font-size:13px;color:#FFD580;font-weight:600;letter-spacing:.5px;margin-bottom:4px"},"KOKAN TRIP 2026"),
+    el("div",{style:"width:40px;height:2px;background:#FFD580;border-radius:99px;margin:12px auto"}),
+    el("div",{style:"display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-bottom:24px"},
+      el("span",{style:"background:rgba(255,255,255,0.12);border-radius:99px;padding:5px 14px;font-size:13px;color:#fff"},"20–22 March 2026"),
+      el("span",{style:"background:rgba(255,255,255,0.12);border-radius:99px;padding:5px 14px;font-size:13px;color:#fff"},"🌴 Konkan Coast"),
+     
+    ),
+    el("button",{
+      style:"background:#FFD580;color:#1B3F6B;border:none;border-radius:10px;padding:14px 32px;font-size:16px;font-weight:800;cursor:pointer;width:100%;max-width:320px;letter-spacing:.3px",
+      onclick:()=>{state.screen="home";render();}
+    },"Fill Meal Preferences →")
+  );
+  wrap.appendChild(body);
+  return wrap;
+}
+
 function renderHome() {
   const configured = SCRIPT_URL !== "YOUR_APPS_SCRIPT_URL_HERE";
   return el("div",{},
     el("div",{class:"hero"},
-      el("div",{style:"font-size:40px;margin-bottom:10px"},"🏖"),
-      el("h1",{},"March Trip"),
-      el("p",{},"Meal preferences for 20–22 March 2026"),
+      el("div",{style:"font-size:38px;margin-bottom:8px"},"🏖"),
+      el("h1",{},"Meal Preferences"),
+      el("p",{},"ALYF Konan Trip · 20–22 March 2026"),
       el("div",{class:"hero-pills"},
         el("span",{class:"hero-pill"},"🌙 2 Dinners"),
         el("span",{class:"hero-pill"},"☀️ 2 Breakfasts"),
@@ -364,8 +531,8 @@ function renderHome() {
         "Fill my meal preferences →")
     ),
     !configured ? el("div",{class:"config-notice show"},
-      "⚠️ <b>Admin:</b> Replace <code>YOUR_APPS_SCRIPT_URL_HERE</code> in the HTML with your Google Apps Script Web App URL before sharing."
-    ) : el("div",{})
+      "⚠️ <b>Admin:</b> Replace <code>YOUR_APPS_SCRIPT_URL_HERE</code> in the HTML with your Apps Script Web App URL before sharing."
+    ) : el("span",{})
   );
 }
 
@@ -385,17 +552,53 @@ function renderNav() {
 }
 
 function renderStep1() {
+  const mobileValid = /^[0-9]{10}$/.test(state.form.mobile.trim());
+  const mobileHasInput = state.form.mobile.trim().length > 0;
+  const ecValid = state.form.emergencyContact.trim() === "" || /^[0-9]{10}$/.test(state.form.emergencyContact.trim());
+  const ecHasInput = state.form.emergencyContact.trim().length > 0;
+
+  function makeInput(placeholder, value, onInput, type="text", maxlen=null) {
+    const inp = el("input", {type, placeholder, value});
+    if (maxlen) inp.setAttribute("maxlength", maxlen);
+    inp.addEventListener("input", e => {
+      onInput(e.target.value);
+      const btn = document.querySelector(".btn-primary");
+      if (btn) btn.disabled = !canNext();
+      render();
+    });
+    inp.addEventListener("keydown", e => { if (e.key==="Enter" && canNext()) { state.step++; render(); } });
+    return inp;
+  }
+
   return el("div",{class:"card"},
     el("div",{class:"step-icon"},"👋"),
-    el("div",{class:"step-title"},`What's your name?`),
-    el("div",{class:"step-sub"},"So we can save your preferences"),
-    (() => {
-      const inp = el("input",{type:"text", placeholder:"Enter your full name", value: state.form.name,
-        oninput: e => { state.form.name = e.target.value; document.querySelector(".btn-primary") && (document.querySelector(".btn-primary").disabled = !canNext()); },
-        onkeydown: e => { if(e.key==="Enter" && canNext()) { state.step++; render(); } }
-      });
-      return inp;
-    })()
+    el("div",{class:"step-title"},"Tell us about you"),
+    el("div",{class:"step-sub"},"So we can save your preferences and reach you if needed"),
+    el("div",{style:"display:flex;flex-direction:column;gap:14px"},
+      el("div",{},
+        el("label",{style:"font-size:12px;font-weight:600;color:var(--muted);display:block;margin-bottom:5px"},"FULL NAME *"),
+        makeInput("Enter your full name", state.form.name, v => state.form.name = v)
+      ),
+      el("div",{},
+        el("label",{style:"font-size:12px;font-weight:600;color:var(--muted);display:block;margin-bottom:5px"},"MOBILE NUMBER *"),
+        makeInput("10-digit number e.g. 9876543210", state.form.mobile, v => state.form.mobile = v.replace(/[^0-9]/g,""), "tel", "10"),
+        mobileHasInput && !mobileValid
+          ? el("div",{style:"font-size:11px;color:#D32F2F;margin-top:4px"},"⚠ Please enter a valid 10-digit mobile number")
+          : mobileValid
+            ? el("div",{style:"font-size:11px;color:#388E3C;margin-top:4px"},"✓ Valid")
+            : el("span",{})
+      ),
+      el("div",{},
+        el("label",{style:"font-size:12px;font-weight:600;color:var(--muted);display:block;margin-bottom:3px"},"EMERGENCY CONTACT NUMBER"),
+        el("span",{style:"font-size:11px;color:var(--muted);display:block;margin-bottom:5px"},"Mobile number of someone not on this trip (optional)"),
+        makeInput("10-digit number e.g. 9123456789", state.form.emergencyContact, v => state.form.emergencyContact = v.replace(/[^0-9]/g,""), "tel", "10"),
+        ecHasInput && !ecValid
+          ? el("div",{style:"font-size:11px;color:#D32F2F;margin-top:4px"},"⚠ Please enter a valid 10-digit number")
+          : ecHasInput && ecValid
+            ? el("div",{style:"font-size:11px;color:#388E3C;margin-top:4px"},"✓ Valid")
+            : el("span",{})
+      )
+    )
   );
 }
 
@@ -452,11 +655,14 @@ function renderMealStep(step) {
     ),
     el("div",{class:"step-sub"},meal.desc),
     ...Object.entries(grouped).map(([cat, catItems]) => el("div",{},
-      hasCats ? el("div",{class:"section-head"},cat) : null,
+      hasCats ? el("div",{class:"section-head"+(cat==="Thali"?" thali-head":"")},
+        cat==="Thali" ? el("span",{},"🍱 Thali  ", el("span",{class:"thali-badge"},"RECOMMENDED")) : cat
+      ) : null,
       el("div",{class:"item-grid"},
         ...catItems.map(item => {
+          const isThali = cat === "Thali";
           const isSel = sel.includes(item.n);
-          return el("button",{class:"item-btn"+(isSel?" sel":""), onclick:()=>toggleItem(meal.key, item.n)},
+          return el("button",{class:"item-btn"+(isThali?" thali":"")+(isSel?" sel":""), onclick:()=>toggleItem(meal.key, item.n)},
             el("div",{style:"flex:1;min-width:0"},
               el("div",{class:"item-name"},item.n),
               el("div",{class:"item-price"},item.p)
@@ -481,6 +687,16 @@ function renderReview() {
       ),
       el("span",{style:"padding:4px 12px;border-radius:99px;font-size:13px;background:var(--light-blue);color:var(--blue)"},
         "🥂 " + (drinkLabels.join(", ")||"—")
+      )
+    ),
+    el("div",{style:"background:var(--alt);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:16px;font-size:13px"},
+      el("div",{style:"display:flex;gap:8px;margin-bottom:6px"},
+        el("span",{style:"color:var(--muted);min-width:80px"},"📱 Mobile"),
+        el("span",{style:"font-weight:600"},state.form.mobile||"—")
+      ),
+      el("div",{style:"display:flex;gap:8px"},
+        el("span",{style:"color:var(--muted);min-width:80px"},"🆘 Emergency"),
+        el("span",{},(state.form.emergencyContact ? "+91 "+state.form.emergencyContact : "Not provided"))
       )
     ),
     ...MEALS.map(m => {
@@ -532,7 +748,7 @@ function renderDone() {
     el("p",{},"Your meal preferences have been saved. See you on 20th March!"),
     el("button",{class:"btn-primary",style:"max-width:260px;margin:0 auto",
       onclick:()=>{
-        state={screen:"form",step:1,form:{name:"",dietary:"",drinks:[],d1_dinner:[],d2_breakfast:[],d2_lunch:[],d2_dinner:[],d3_breakfast:[]},saving:false};
+        state={screen:"splash",step:1,form:{name:"",mobile:"",emergencyContact:"",dietary:"",drinks:[],d1_dinner:[],d2_breakfast:[],d2_lunch:[],d2_dinner:[],d3_breakfast:[]},saving:false};
         render();
       }}, "Add another person")
   );
@@ -551,7 +767,8 @@ function renderError() {
 function render() {
   const app = document.getElementById("app");
   app.innerHTML = "";
-  if (state.screen==="home") app.appendChild(renderHome());
+  if (state.screen==="splash") app.appendChild(renderSplash());
+  else if (state.screen==="home") app.appendChild(renderHome());
   else if (state.screen==="form") app.appendChild(renderForm());
   else if (state.screen==="done") app.appendChild(renderDone());
   else if (state.screen==="error") app.appendChild(renderError());
