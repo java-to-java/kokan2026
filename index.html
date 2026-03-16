@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>March Trip — Meal Preferences</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --navy:#1B3F6B;--blue:#2E75B6;--light-blue:#E6F1FB;
+    --veg-green:#375623;--veg-bg:#E2EFDA;
+    --nv-orange:#843C0C;--nv-bg:#FCE4D6;
+    --border:#D0DCE8;--alt:#F7FAFD;
+    --text:#1a1a1a;--muted:#666;
+    --radius:12px;--radius-sm:8px;
+  }
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;
+    background:#F0F4F8;min-height:100vh;color:var(--text);font-size:15px}
+  .shell{max-width:560px;margin:0 auto;padding:16px 12px 60px}
+
+  /* ── Progress ── */
+  .prog-wrap{margin-bottom:20px}
+  .prog-bar{height:5px;background:#dde4ed;border-radius:99px;overflow:hidden}
+  .prog-fill{height:5px;background:var(--blue);border-radius:99px;transition:width .35s ease}
+  .prog-label{font-size:12px;color:var(--muted);margin-top:5px;display:flex;justify-content:space-between}
+
+  /* ── Card ── */
+  .card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:14px}
+
+  /* ── Step header ── */
+  .step-icon{font-size:36px;text-align:center;margin-bottom:8px}
+  .step-title{font-size:20px;font-weight:600;text-align:center;margin-bottom:6px}
+  .step-sub{font-size:13px;color:var(--muted);text-align:center;margin-bottom:22px}
+
+  /* ── Inputs ── */
+  input[type=text]{width:100%;padding:12px 14px;border:1.5px solid var(--border);
+    border-radius:var(--radius-sm);font-size:15px;outline:none;transition:border .2s}
+  input[type=text]:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(46,117,182,.12)}
+
+  /* ── Option cards ── */
+  .opt-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:22px}
+  .opt-card{padding:16px 12px;border:1.5px solid var(--border);border-radius:var(--radius);
+    text-align:center;cursor:pointer;transition:all .15s;background:#fff;user-select:none}
+  .opt-card:hover{border-color:var(--blue);background:var(--light-blue)}
+  .opt-card.sel{border-color:var(--blue);background:var(--light-blue)}
+  .opt-card.sel .opt-label{color:var(--blue)}
+  .opt-icon{font-size:26px;margin-bottom:6px}
+  .opt-label{font-size:14px;font-weight:600}
+  .opt-desc{font-size:11px;color:var(--muted);margin-top:3px}
+
+  /* ── Meal items ── */
+  .section-head{font-size:11px;font-weight:700;color:var(--muted);
+    text-transform:uppercase;letter-spacing:.8px;padding:10px 0 6px;
+    border-bottom:1px solid var(--border);margin-bottom:8px}
+  .item-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:14px}
+  .item-btn{padding:9px 10px;border:1.5px solid var(--border);border-radius:var(--radius-sm);
+    background:#fff;text-align:left;cursor:pointer;display:flex;
+    justify-content:space-between;align-items:center;gap:6px;transition:all .12s}
+  .item-btn:hover{border-color:var(--blue);background:var(--light-blue)}
+  .item-btn.sel{border-color:var(--blue);background:var(--light-blue)}
+  .item-name{font-size:12px;line-height:1.3;color:var(--text)}
+  .item-btn.sel .item-name{color:var(--blue);font-weight:600}
+  .item-price{font-size:11px;color:var(--muted);white-space:nowrap}
+  .item-btn.sel .item-price{color:var(--blue)}
+  .chk{width:17px;height:17px;border-radius:50%;border:1.5px solid var(--border);
+    flex-shrink:0;display:flex;align-items:center;justify-content:center;
+    font-size:10px;color:#fff;background:#fff;transition:all .12s}
+  .item-btn.sel .chk{background:var(--blue);border-color:var(--blue)}
+  .sel-badge{display:inline-block;background:var(--light-blue);color:var(--blue);
+    border-radius:99px;padding:3px 10px;font-size:12px;font-weight:600;margin-left:8px}
+
+  /* ── Review ── */
+  .review-meal{margin-bottom:14px}
+  .review-meal-title{font-size:12px;font-weight:700;color:var(--muted);margin-bottom:6px}
+  .tag{display:inline-block;background:#F0F4F8;border:1px solid var(--border);
+    border-radius:99px;padding:3px 10px;font-size:12px;margin:2px 2px 2px 0}
+
+  /* ── Buttons ── */
+  .btn-row{display:flex;gap:10px;margin-top:16px}
+  .btn-primary{flex:1;padding:13px;border:none;border-radius:var(--radius-sm);
+    background:var(--blue);color:#fff;font-size:15px;font-weight:600;
+    cursor:pointer;transition:background .15s}
+  .btn-primary:hover{background:var(--navy)}
+  .btn-primary:disabled{opacity:.45;cursor:not-allowed}
+  .btn-skip{padding:13px 16px;border:1.5px solid var(--border);border-radius:var(--radius-sm);
+    background:#fff;color:var(--muted);font-size:14px;cursor:pointer;transition:all .15s}
+  .btn-skip:hover{border-color:var(--blue);color:var(--blue)}
+  .btn-back{padding:11px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);
+    background:#fff;color:var(--muted);font-size:13px;cursor:pointer}
+
+  /* ── Banners ── */
+  .hero{background:var(--navy);color:#fff;border-radius:var(--radius);
+    padding:28px 20px 22px;text-align:center;margin-bottom:14px}
+  .hero h1{font-size:22px;font-weight:700;margin-bottom:6px}
+  .hero p{font-size:13px;opacity:.8;margin-bottom:14px}
+  .hero-pills{display:flex;flex-wrap:wrap;justify-content:center;gap:6px}
+  .hero-pill{background:rgba(255,255,255,.15);border-radius:99px;
+    padding:4px 12px;font-size:12px}
+
+  .btn-start{width:100%;padding:14px;border:none;border-radius:var(--radius-sm);
+    background:#fff;color:var(--navy);font-size:16px;font-weight:700;
+    cursor:pointer;margin-top:18px;transition:opacity .15s}
+  .btn-start:hover{opacity:.88}
+
+  /* ── Nav bar ── */
+  .nav{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+  .nav-title{font-size:14px;font-weight:600;flex:1;color:var(--navy)}
+
+  /* ── Done screen ── */
+  .done{text-align:center;padding:40px 20px}
+  .done-icon{font-size:56px;margin-bottom:14px}
+  .done h2{font-size:22px;font-weight:700;margin-bottom:8px}
+  .done p{color:var(--muted);font-size:14px;margin-bottom:24px}
+
+  /* ── Config notice ── */
+  .config-notice{background:#FFF9C4;border:1px solid #F0D050;border-radius:var(--radius-sm);
+    padding:12px 14px;font-size:13px;color:#555;margin-bottom:14px;display:none}
+  .config-notice.show{display:block}
+
+  /* ── Spinner ── */
+  .spinner{display:inline-block;width:18px;height:18px;border:2px solid rgba(255,255,255,.4);
+    border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  @media(max-width:400px){
+    .item-grid{grid-template-columns:1fr}
+    .opt-grid{grid-template-columns:1fr 1fr}
+  }
+</style>
+</head>
+<body>
+<div class="shell" id="app"></div>
+
+<script>
+// ─── CONFIGURATION — REPLACE THIS AFTER DEPLOYING APPS SCRIPT ───────────────
+const SCRIPT_URL = "YOUR_APPS_SCRIPT_URL_HERE";
+// ────────────────────────────────────────────────────────────────────────────
+
+const BREAKFAST_VEG = [
+  {n:"KandaPohe",p:"₹70"},{n:"Upma",p:"₹70"},{n:"Shira",p:"₹90"},
+  {n:"Thalipeeth",p:"₹80"},{n:"Sabudana Khichadi",p:"₹80"},
+  {n:"Ghavan Chutney (2 pcs)",p:"₹90"},{n:"Aloo Paratha",p:"₹90"},
+  {n:"Sabudana Wada (2 pcs)",p:"₹80"},{n:"Bread Butter",p:"₹60"},
+  {n:"Bread Jam",p:"₹70"},{n:"Kanda Bhaji / Pakoda",p:"₹80"},
+  {n:"Batata Bhaji / Pakoda",p:"₹80"},{n:"Finger Chips",p:"₹90"},
+  {n:"Paneer Pakoda",p:"₹200"},{n:"Maggi",p:"₹60"},
+  {n:"Tea",p:"₹30"},{n:"Bournvita Glass",p:"₹80"},{n:"Nescafe Coffee",p:"₹40"},
+];
+const BREAKFAST_EGG = [
+  {n:"Boiled Egg",p:"₹50"},{n:"Egg Omelette (Double)",p:"₹70"},
+  {n:"Bread Omelette",p:"₹90"},{n:"Egg Half Fry",p:"₹60"},
+  {n:"Egg Burji",p:"₹120"},{n:"Egg Masala",p:"₹180"},{n:"Egg Curry",p:"₹150"},
+];
+const BREAKFAST_NV = [...BREAKFAST_VEG, ...BREAKFAST_EGG];
+
+const LUNCH_VEG = [
+  {n:"Veg Thali",p:"₹250",c:"Thali"},
+  {n:"Paneer Tikka Masala",p:"₹260",c:"Paneer"},{n:"Paneer Butter Masala",p:"₹260",c:"Paneer"},
+  {n:"Paneer Masala",p:"₹230",c:"Paneer"},{n:"Mutter Paneer",p:"₹200",c:"Paneer"},
+  {n:"Mix Veg",p:"₹190",c:"Vegetables"},{n:"Veg Kolhapuri",p:"₹210",c:"Vegetables"},
+  {n:"Aloo Mutter",p:"₹160",c:"Vegetables"},{n:"Yellow Batata",p:"₹140",c:"Vegetables"},
+  {n:"Bharli Wangi",p:"₹200",c:"Vegetables"},{n:"Konkani Bhendi",p:"₹150",c:"Vegetables"},
+  {n:"Kaju Usal",p:"₹250",c:"Konkni Usal"},{n:"Wal Usal (Dalimbi)",p:"₹180",c:"Konkni Usal"},
+  {n:"Matki Usal",p:"₹140",c:"Konkni Usal"},{n:"Kala Watana Usal",p:"₹140",c:"Konkni Usal"},
+  {n:"Pithala",p:"₹150",c:"Konkani Zaika"},{n:"Zunka",p:"₹130",c:"Konkani Zaika"},
+  {n:"Dal Fry",p:"₹150",c:"Dal"},{n:"Dal Tadka",p:"₹180",c:"Dal"},{n:"Tak Kadhi",p:"₹120",c:"Dal"},
+  {n:"Veg Biryani",p:"₹240",c:"Rice"},{n:"Veg Pulao",p:"₹190",c:"Rice"},
+  {n:"Masala Bhat",p:"₹160",c:"Rice"},{n:"Daal Khichadi",p:"₹150",c:"Rice"},{n:"Steam Rice",p:"₹100",c:"Rice"},
+  {n:"Chapati",p:"₹20",c:"Bread"},{n:"Bhakri (Rice Flour)",p:"₹35",c:"Bread"},{n:"Wade (5 pcs)",p:"₹100",c:"Bread"},
+];
+const LUNCH_NV = [
+  {n:"Chicken Thali",p:"₹300",c:"Thali"},{n:"Kombadi Wade Thali",p:"₹350",c:"Thali"},
+  {n:"Egg Thali",p:"₹280",c:"Thali"},{n:"Fish Thali (Prawns/Pompfret/Surmai)",p:"₹500",c:"Thali"},
+  {n:"Veg Thali",p:"₹250",c:"Thali"},
+  {n:"Chicken Biryani",p:"₹320",c:"Biryani"},{n:"Prawns Biryani",p:"₹400",c:"Biryani"},
+  {n:"Egg Biryani",p:"₹220",c:"Biryani"},{n:"Veg Biryani",p:"₹240",c:"Biryani"},
+  {n:"Chicken Handi (half)",p:"₹400",c:"Chicken"},{n:"Chicken Handi (full)",p:"₹700",c:"Chicken"},
+  {n:"Chicken Masala",p:"₹280",c:"Chicken"},{n:"Chicken Fry",p:"₹350",c:"Chicken"},
+  {n:"Chicken Dry",p:"₹300",c:"Chicken"},{n:"Butter Chicken",p:"₹300",c:"Chicken"},
+  {n:"Chicken Curry",p:"₹240",c:"Chicken"},
+  {n:"Pompfret Fry",p:"₹400",c:"Tawa Fish Fry"},{n:"Surmai Fry",p:"₹400",c:"Tawa Fish Fry"},
+  {n:"Prawns Fry",p:"₹400",c:"Tawa Fish Fry"},{n:"Prawns Koliwada",p:"₹420",c:"Tawa Fish Fry"},
+  {n:"Pompfret Curry",p:"APS",c:"Fish & Curry"},{n:"Surmai Curry",p:"APS",c:"Fish & Curry"},
+  {n:"Prawns Curry",p:"APS",c:"Fish & Curry"},{n:"Surmai Masala",p:"APS",c:"Fish & Curry"},
+  {n:"Prawns Masala",p:"APS",c:"Fish & Curry"},
+  {n:"Egg Curry",p:"₹150",c:"Eggs"},{n:"Egg Masala",p:"₹180",c:"Eggs"},
+  {n:"Paneer Tikka Masala",p:"₹260",c:"Veg"},{n:"Mix Veg",p:"₹190",c:"Veg"},
+  {n:"Pithala",p:"₹150",c:"Veg"},{n:"Kaju Usal",p:"₹250",c:"Veg"},{n:"Matki Usal",p:"₹140",c:"Veg"},
+  {n:"Dal Fry",p:"₹150",c:"Dal"},{n:"Dal Tadka",p:"₹180",c:"Dal"},
+  {n:"Masala Bhat",p:"₹160",c:"Rice"},{n:"Steam Rice",p:"₹100",c:"Rice"},{n:"Daal Khichadi",p:"₹150",c:"Rice"},
+  {n:"Chapati",p:"₹20",c:"Bread"},{n:"Bhakri (Rice Flour)",p:"₹35",c:"Bread"},
+];
+const DINNER_VEG = [
+  {n:"Veg Thali",p:"₹250",c:"Thali"},
+  {n:"Veg Clear Soup",p:"₹100",c:"Soups"},{n:"Veg Manchow Soup",p:"₹130",c:"Soups"},
+  {n:"Veg Hot N Sour",p:"₹130",c:"Soups"},{n:"Tomato Soup",p:"₹120",c:"Soups"},
+  {n:"Veg Manchurian",p:"₹200",c:"Chinese Starters"},{n:"Veg 65",p:"₹230",c:"Chinese Starters"},
+  {n:"Paneer Chilly",p:"₹250",c:"Chinese Starters"},{n:"Veg Crispy",p:"₹200",c:"Chinese Starters"},
+  {n:"Masala Papad (Big)",p:"₹55",c:"Snacks"},{n:"Chana Garlic",p:"₹140",c:"Snacks"},
+  {n:"Garlic Fry",p:"₹140",c:"Snacks"},{n:"Roasted Papad",p:"₹30",c:"Snacks"},
+  {n:"Mirchi Thecha",p:"₹50",c:"Snacks"},{n:"Poha Papad (Mirgund)",p:"₹55",c:"Snacks"},
+  {n:"Paneer Tikka Masala",p:"₹260",c:"Paneer"},{n:"Paneer Butter Masala",p:"₹260",c:"Paneer"},
+  {n:"Paneer Masala",p:"₹230",c:"Paneer"},{n:"Paneer Burji",p:"₹210",c:"Paneer"},
+  {n:"Mutter Paneer",p:"₹200",c:"Paneer"},
+  {n:"Mix Veg",p:"₹190",c:"Mains"},{n:"Veg Kolhapuri",p:"₹210",c:"Mains"},
+  {n:"Aloo Mutter",p:"₹160",c:"Mains"},{n:"Bharli Wangi",p:"₹200",c:"Mains"},{n:"Shave Bhaji",p:"₹180",c:"Mains"},
+  {n:"Pithala",p:"₹150",c:"Konkani"},{n:"Zunka",p:"₹130",c:"Konkani"},{n:"Kaju Masala",p:"₹300",c:"Konkani"},
+  {n:"Dal Fry",p:"₹150",c:"Dal"},{n:"Dal Tadka",p:"₹180",c:"Dal"},{n:"Tak Kadhi",p:"₹120",c:"Dal"},
+  {n:"Veg Biryani",p:"₹240",c:"Rice & Noodles"},{n:"Veg Pulao",p:"₹190",c:"Rice & Noodles"},
+  {n:"Masala Bhat",p:"₹160",c:"Rice & Noodles"},{n:"Steam Rice",p:"₹100",c:"Rice & Noodles"},
+  {n:"Veg Fried Rice",p:"₹220",c:"Rice & Noodles"},{n:"Veg Schezwan Fried Rice",p:"₹240",c:"Rice & Noodles"},
+  {n:"Veg Hakka Noodles",p:"₹210",c:"Rice & Noodles"},{n:"Veg Schezwan Noodles",p:"₹240",c:"Rice & Noodles"},
+  {n:"Chapati",p:"₹20",c:"Bread"},{n:"Bhakri (Rice Flour)",p:"₹35",c:"Bread"},{n:"Wade (5 pcs)",p:"₹100",c:"Bread"},
+];
+const DINNER_NV = [
+  {n:"Chicken Thali",p:"₹300",c:"Thali"},{n:"Fish Thali (Prawns/Pompfret/Surmai)",p:"₹500",c:"Thali"},{n:"Veg Thali",p:"₹250",c:"Thali"},
+  {n:"Chicken Manchow Soup",p:"₹150",c:"Soups"},{n:"Chicken Clear Soup",p:"₹150",c:"Soups"},
+  {n:"Veg Clear Soup",p:"₹100",c:"Soups"},{n:"Veg Manchow Soup",p:"₹130",c:"Soups"},{n:"Tomato Soup",p:"₹120",c:"Soups"},
+  {n:"Chicken Crispy",p:"₹260",c:"Chinese Starters"},{n:"Chicken Manchurian",p:"₹260",c:"Chinese Starters"},
+  {n:"Chicken Chilly",p:"₹270",c:"Chinese Starters"},{n:"Chicken 65",p:"₹290",c:"Chinese Starters"},
+  {n:"Chicken Lollipop",p:"₹320",c:"Chinese Starters"},{n:"Chicken Lollipop Gravy",p:"₹350",c:"Chinese Starters"},
+  {n:"Veg Manchurian",p:"₹200",c:"Chinese Starters"},{n:"Veg 65",p:"₹230",c:"Chinese Starters"},
+  {n:"Paneer Chilly",p:"₹250",c:"Chinese Starters"},{n:"Veg Crispy",p:"₹200",c:"Chinese Starters"},
+  {n:"Masala Papad (Big)",p:"₹55",c:"Snacks"},{n:"Chana Garlic",p:"₹140",c:"Snacks"},
+  {n:"Garlic Fry",p:"₹140",c:"Snacks"},{n:"Mirchi Thecha",p:"₹50",c:"Snacks"},
+  {n:"Pompfret Fry",p:"₹400",c:"Tawa Fish Fry"},{n:"Surmai Fry",p:"₹400",c:"Tawa Fish Fry"},
+  {n:"Prawns Fry",p:"₹400",c:"Tawa Fish Fry"},{n:"Prawns Koliwada",p:"₹420",c:"Tawa Fish Fry"},
+  {n:"Pompfret Curry",p:"APS",c:"Fish & Curry"},{n:"Surmai Curry",p:"APS",c:"Fish & Curry"},
+  {n:"Prawns Curry",p:"APS",c:"Fish & Curry"},{n:"Surmai Masala",p:"APS",c:"Fish & Curry"},
+  {n:"Prawns Masala",p:"APS",c:"Fish & Curry"},
+  {n:"Paneer Tikka Masala",p:"₹260",c:"Paneer & Veg"},{n:"Paneer Butter Masala",p:"₹260",c:"Paneer & Veg"},
+  {n:"Mix Veg",p:"₹190",c:"Paneer & Veg"},{n:"Bharli Wangi",p:"₹200",c:"Paneer & Veg"},
+  {n:"Chicken Handi (half)",p:"₹400",c:"Chicken"},{n:"Chicken Handi (full)",p:"₹700",c:"Chicken"},
+  {n:"Chicken Masala",p:"₹280",c:"Chicken"},{n:"Chicken Fry",p:"₹350",c:"Chicken"},
+  {n:"Chicken Dry",p:"₹300",c:"Chicken"},{n:"Butter Chicken",p:"₹300",c:"Chicken"},
+  {n:"Chicken Curry",p:"₹240",c:"Chicken"},
+  {n:"Dal Fry",p:"₹150",c:"Dal"},{n:"Dal Tadka",p:"₹180",c:"Dal"},
+  {n:"Chicken Biryani",p:"₹320",c:"Rice & Noodles"},{n:"Prawns Biryani",p:"₹400",c:"Rice & Noodles"},
+  {n:"Veg Biryani",p:"₹240",c:"Rice & Noodles"},{n:"Chicken Fried Rice",p:"₹250",c:"Rice & Noodles"},
+  {n:"Egg Fried Rice",p:"₹210",c:"Rice & Noodles"},{n:"Veg Fried Rice",p:"₹220",c:"Rice & Noodles"},
+  {n:"Chicken Schezwan Fried Rice",p:"₹270",c:"Rice & Noodles"},{n:"Veg Schezwan Fried Rice",p:"₹240",c:"Rice & Noodles"},
+  {n:"Chicken Hakka Noodles",p:"₹250",c:"Rice & Noodles"},{n:"Chicken Schezwan Noodles",p:"₹280",c:"Rice & Noodles"},
+  {n:"Veg Hakka Noodles",p:"₹210",c:"Rice & Noodles"},
+  {n:"Chapati",p:"₹20",c:"Bread"},{n:"Bhakri (Rice Flour)",p:"₹35",c:"Bread"},{n:"Wade (5 pcs)",p:"₹100",c:"Bread"},
+];
+
+const MEALS = [
+  {key:"d1_dinner",   label:"20 Mar — Dinner",     short:"Fri Dinner",      emoji:"🌙", desc:"Friday evening · Kitchen 8–11 PM",   veg:DINNER_VEG,   nv:DINNER_NV},
+  {key:"d2_breakfast",label:"21 Mar — Breakfast",  short:"Sat Breakfast",   emoji:"☀️", desc:"Saturday morning · Kitchen 8–10 AM", veg:BREAKFAST_VEG,nv:BREAKFAST_NV},
+  {key:"d2_lunch",    label:"21 Mar — Lunch",       short:"Sat Lunch",       emoji:"🌤", desc:"Saturday afternoon · Kitchen 12–3 PM",veg:LUNCH_VEG,    nv:LUNCH_NV},
+  {key:"d2_dinner",   label:"21 Mar — Dinner",      short:"Sat Dinner",      emoji:"🌙", desc:"Saturday evening · Kitchen 8–11 PM",  veg:DINNER_VEG,   nv:DINNER_NV},
+  {key:"d3_breakfast",label:"22 Mar — Breakfast",  short:"Sun Breakfast",   emoji:"🌅", desc:"Sunday morning · Kitchen 8–10 AM",   veg:BREAKFAST_VEG,nv:BREAKFAST_NV},
+];
+
+const DRINKS = [
+  {id:"soft",  emoji:"🥤", label:"Soft Drinks",   desc:"Cola, soda, juice"},
+  {id:"beer",  emoji:"🍺", label:"Beer",           desc:"Chilled lager / ale"},
+  {id:"hard",  emoji:"🥃", label:"Hard Drinks",    desc:"Whiskey, rum, vodka"},
+  {id:"none",  emoji:"🚫", label:"No Alcohol",     desc:"Just water / soft drinks"},
+];
+
+// ─── State ───────────────────────────────────────────────────────────────────
+let state = {
+  screen: "home",   // home | form | done | error
+  step: 1,          // 1=name 2=dietary 3=drinks 4-8=meals 9=review
+  form: {name:"", dietary:"", drinks:[], d1_dinner:[], d2_breakfast:[], d2_lunch:[], d2_dinner:[], d3_breakfast:[]},
+  saving: false,
+};
+const TOTAL = 9;
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+function groupBy(arr, key) {
+  const g = {};
+  arr.forEach(i => { const k = i[key]||"Other"; (g[k]=g[k]||[]).push(i); });
+  return g;
+}
+function canNext() {
+  const {step, form} = state;
+  if (step===1) return form.name.trim().length >= 2;
+  if (step===2) return !!form.dietary;
+  if (step===3) return form.drinks.length > 0;
+  return true;
+}
+function mealItems(mealKey) {
+  const m = MEALS[mealKey - 4];
+  return state.form.dietary === "Non-Veg" ? m.nv : m.veg;
+}
+function toggleItem(key, name) {
+  const cur = state.form[key];
+  state.form[key] = cur.includes(name) ? cur.filter(x=>x!==name) : [...cur, name];
+  render();
+}
+function toggleDrink(id) {
+  const cur = state.form.drinks;
+  let upd;
+  if (id==="none") { upd = (cur.includes("none") && cur.length===1) ? [] : ["none"]; }
+  else { const no = cur.filter(d=>d!=="none"); upd = no.includes(id) ? no.filter(x=>x!==id) : [...no, id]; }
+  state.form.drinks = upd;
+  render();
+}
+
+// ─── Submit ───────────────────────────────────────────────────────────────────
+async function submit() {
+  if (SCRIPT_URL === "YOUR_APPS_SCRIPT_URL_HERE") {
+    alert("⚠️  Please paste your Google Apps Script URL into the SCRIPT_URL variable in the HTML file.");
+    return;
+  }
+  state.saving = true; render();
+  const payload = {
+    ...state.form,
+    drinks: state.form.drinks.join(", "),
+    d1_dinner:    state.form.d1_dinner.join(", "),
+    d2_breakfast: state.form.d2_breakfast.join(", "),
+    d2_lunch:     state.form.d2_lunch.join(", "),
+    d2_dinner:    state.form.d2_dinner.join(", "),
+    d3_breakfast: state.form.d3_breakfast.join(", "),
+    submittedAt:  new Date().toLocaleString("en-IN"),
+  };
+  try {
+    await fetch(SCRIPT_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify(payload),
+    });
+    state.screen = "done"; state.saving = false; render();
+  } catch(e) {
+    state.saving = false;
+    state.screen = "error"; render();
+  }
+}
+
+// ─── Renderers ───────────────────────────────────────────────────────────────
+function el(tag, attrs, ...children) {
+  const e = document.createElement(tag);
+  if (attrs) Object.entries(attrs).forEach(([k,v]) => {
+    if (k==="class") e.className=v;
+    else if (k.startsWith("on")) e.addEventListener(k.slice(2).toLowerCase(), v);
+    else e.setAttribute(k, v);
+  });
+  children.flat().forEach(c => {
+    if (c==null) return;
+    e.appendChild(typeof c==="string" ? document.createTextNode(c) : c);
+  });
+  return e;
+}
+
+function renderHome() {
+  const configured = SCRIPT_URL !== "YOUR_APPS_SCRIPT_URL_HERE";
+  return el("div",{},
+    el("div",{class:"hero"},
+      el("div",{style:"font-size:40px;margin-bottom:10px"},"🏖"),
+      el("h1",{},"March Trip"),
+      el("p",{},"Meal preferences for 20–22 March 2026"),
+      el("div",{class:"hero-pills"},
+        el("span",{class:"hero-pill"},"🌙 2 Dinners"),
+        el("span",{class:"hero-pill"},"☀️ 2 Breakfasts"),
+        el("span",{class:"hero-pill"},"🌤 1 Lunch"),
+        el("span",{class:"hero-pill"},"Arrive 20 Mar evening"),
+        el("span",{class:"hero-pill"},"Checkout 22 Mar morning"),
+      ),
+      el("button",{class:"btn-start", onclick:()=>{state.screen="form";state.step=1;render();}},
+        "Fill my meal preferences →")
+    ),
+    !configured ? el("div",{class:"config-notice show"},
+      "⚠️ <b>Admin:</b> Replace <code>YOUR_APPS_SCRIPT_URL_HERE</code> in the HTML with your Google Apps Script Web App URL before sharing."
+    ) : el("div",{})
+  );
+}
+
+function renderNav() {
+  const pct = Math.round(state.step / TOTAL * 100);
+  const stepNames = ["Name","Diet","Drinks","Fri Dinner","Sat Breakfast","Sat Lunch","Sat Dinner","Sun Breakfast","Review"];
+  return el("div",{},
+    el("div",{class:"nav"},
+      state.step > 1 ? el("button",{class:"btn-back", onclick:()=>{state.step--;render();}}, "← Back") : el("span",{}),
+      el("span",{class:"nav-title"}, stepNames[state.step-1]),
+      el("span",{style:"font-size:12px;color:var(--muted);"}, `${state.step}/${TOTAL}`)
+    ),
+    el("div",{class:"prog-wrap"},
+      el("div",{class:"prog-bar"}, el("div",{class:"prog-fill",style:`width:${pct}%`})),
+    )
+  );
+}
+
+function renderStep1() {
+  return el("div",{class:"card"},
+    el("div",{class:"step-icon"},"👋"),
+    el("div",{class:"step-title"},`What's your name?`),
+    el("div",{class:"step-sub"},"So we can save your preferences"),
+    (() => {
+      const inp = el("input",{type:"text", placeholder:"Enter your full name", value: state.form.name,
+        oninput: e => { state.form.name = e.target.value; document.querySelector(".btn-primary") && (document.querySelector(".btn-primary").disabled = !canNext()); },
+        onkeydown: e => { if(e.key==="Enter" && canNext()) { state.step++; render(); } }
+      });
+      return inp;
+    })()
+  );
+}
+
+function renderStep2() {
+  return el("div",{class:"card"},
+    el("div",{class:"step-icon"},"🍽"),
+    el("div",{class:"step-title"}, `Hey ${state.form.name}!`),
+    el("div",{class:"step-sub"},"What's your dietary preference?"),
+    el("div",{class:"opt-grid"},
+      ...[ {id:"Veg",emoji:"🌿",label:"Vegetarian",desc:"Pure veg options"},
+           {id:"Non-Veg",emoji:"🍖",label:"Non-Vegetarian",desc:"Meat, fish & eggs"} ]
+        .map(o => {
+          const c = el("div",{class:"opt-card"+(state.form.dietary===o.id?" sel":""), onclick:()=>{state.form.dietary=o.id;render();}},
+            el("div",{class:"opt-icon"},o.emoji),
+            el("div",{class:"opt-label"},o.label),
+            el("div",{class:"opt-desc"},o.desc)
+          );
+          return c;
+        })
+    )
+  );
+}
+
+function renderStep3() {
+  return el("div",{class:"card"},
+    el("div",{class:"step-icon"},"🥂"),
+    el("div",{class:"step-title"},"What do you drink?"),
+    el("div",{class:"step-sub"},"Select all that apply"),
+    el("div",{class:"opt-grid"},
+      ...DRINKS.map(o => {
+        const sel = state.form.drinks.includes(o.id);
+        return el("div",{class:"opt-card"+(sel?" sel":""), onclick:()=>toggleDrink(o.id)},
+          el("div",{class:"opt-icon"},o.emoji),
+          el("div",{class:"opt-label"},o.label),
+          el("div",{class:"opt-desc"},o.desc)
+        );
+      })
+    )
+  );
+}
+
+function renderMealStep(step) {
+  const meal = MEALS[step - 4];
+  const items = state.form.dietary === "Non-Veg" ? meal.nv : meal.veg;
+  const sel = state.form[meal.key];
+  const grouped = groupBy(items, "c");
+  const hasCats = items.some(i => i.c);
+
+  return el("div",{class:"card"},
+    el("div",{class:"step-icon"},meal.emoji),
+    el("div",{class:"step-title"},
+      meal.label,
+      sel.length ? el("span",{class:"sel-badge"}, sel.length+" selected") : null
+    ),
+    el("div",{class:"step-sub"},meal.desc),
+    ...Object.entries(grouped).map(([cat, catItems]) => el("div",{},
+      hasCats ? el("div",{class:"section-head"},cat) : null,
+      el("div",{class:"item-grid"},
+        ...catItems.map(item => {
+          const isSel = sel.includes(item.n);
+          return el("button",{class:"item-btn"+(isSel?" sel":""), onclick:()=>toggleItem(meal.key, item.n)},
+            el("div",{style:"flex:1;min-width:0"},
+              el("div",{class:"item-name"},item.n),
+              el("div",{class:"item-price"},item.p)
+            ),
+            el("div",{class:"chk"}, isSel?"✓":"")
+          );
+        })
+      )
+    ))
+  );
+}
+
+function renderReview() {
+  const drinkLabels = state.form.drinks.map(id => DRINKS.find(d=>d.id===id)?.label||id);
+  return el("div",{class:"card"},
+    el("div",{class:"step-icon"},"📋"),
+    el("div",{class:"step-title"},"Review & Confirm"),
+    el("div",{class:"step-sub"},`Preferences for ${state.form.name}`),
+    el("div",{style:"display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px"},
+      el("span",{style:`padding:4px 12px;border-radius:99px;font-size:13px;font-weight:600;background:${state.form.dietary==="Veg"?"var(--veg-bg)":"var(--nv-bg)"};color:${state.form.dietary==="Veg"?"var(--veg-green)":"var(--nv-orange)"}`},
+        (state.form.dietary==="Veg"?"🌿 ":"🍖 ")+state.form.dietary
+      ),
+      el("span",{style:"padding:4px 12px;border-radius:99px;font-size:13px;background:var(--light-blue);color:var(--blue)"},
+        "🥂 " + (drinkLabels.join(", ")||"—")
+      )
+    ),
+    ...MEALS.map(m => {
+      const picks = state.form[m.key];
+      return el("div",{class:"review-meal"},
+        el("div",{class:"review-meal-title"},`${m.emoji} ${m.label}`),
+        picks.length
+          ? el("div",{}, ...picks.map(p => el("span",{class:"tag"},p)))
+          : el("span",{style:"font-size:12px;color:var(--muted)"},"Nothing selected")
+      );
+    })
+  );
+}
+
+function renderForm() {
+  const frag = document.createDocumentFragment();
+  frag.appendChild(renderNav());
+  const s = state.step;
+  if (s===1) frag.appendChild(renderStep1());
+  else if (s===2) frag.appendChild(renderStep2());
+  else if (s===3) frag.appendChild(renderStep3());
+  else if (s>=4 && s<=8) frag.appendChild(renderMealStep(s));
+  else if (s===9) frag.appendChild(renderReview());
+
+  // Bottom row
+  const row = el("div",{class:"btn-row"});
+  if (s >= 4 && s <= 8) {
+    row.appendChild(el("button",{class:"btn-skip", onclick:()=>{state.step++;render();}}, "Skip →"));
+  }
+  if (s < 9) {
+    const nxt = el("button",{class:"btn-primary", disabled:!canNext(), onclick:()=>{state.step++;render();}},
+      s===8 ? "Review →" : "Next →");
+    row.appendChild(nxt);
+  } else {
+    const sub = el("button",{class:"btn-primary", disabled:state.saving,
+      onclick: submit},
+      state.saving ? el("span",{},[el("span",{class:"spinner"}),"Saving..."]) : "Submit preferences ✓"
+    );
+    row.appendChild(sub);
+  }
+  frag.appendChild(row);
+  return frag;
+}
+
+function renderDone() {
+  return el("div",{class:"done"},
+    el("div",{class:"done-icon"},"🎉"),
+    el("h2",{},`Thanks, ${state.form.name}!`),
+    el("p",{},"Your meal preferences have been saved. See you on 20th March!"),
+    el("button",{class:"btn-primary",style:"max-width:260px;margin:0 auto",
+      onclick:()=>{
+        state={screen:"form",step:1,form:{name:"",dietary:"",drinks:[],d1_dinner:[],d2_breakfast:[],d2_lunch:[],d2_dinner:[],d3_breakfast:[]},saving:false};
+        render();
+      }}, "Add another person")
+  );
+}
+
+function renderError() {
+  return el("div",{class:"done"},
+    el("div",{class:"done-icon"},"😕"),
+    el("h2",{},"Something went wrong"),
+    el("p",{},"Couldn't connect to the server. Please check your internet and try again."),
+    el("button",{class:"btn-primary",style:"max-width:260px;margin:0 auto",
+      onclick:()=>{state.screen="form";state.step=9;state.saving=false;render();}}, "Try again")
+  );
+}
+
+function render() {
+  const app = document.getElementById("app");
+  app.innerHTML = "";
+  if (state.screen==="home") app.appendChild(renderHome());
+  else if (state.screen==="form") app.appendChild(renderForm());
+  else if (state.screen==="done") app.appendChild(renderDone());
+  else if (state.screen==="error") app.appendChild(renderError());
+  // Restore input value after re-render
+  if (state.screen==="form" && state.step===1) {
+    setTimeout(()=>{ const i=app.querySelector("input"); if(i){i.value=state.form.name; i.focus();} }, 0);
+  }
+}
+
+render();
+</script>
+</body>
+</html>
