@@ -1,0 +1,279 @@
+{
+  "_meta": {
+    "description": "News Marathi Social Publisher — Master Configuration. Every tunable option lives here so a GUI config screen can bind directly to this file.",
+    "version": "1.0.0",
+    "config_schema_version": "1"
+  },
+
+  "app": {
+    "name": "News Marathi Social Publisher",
+    "version": "1.0.0",
+    "description": "Fetches news articles, translates them to Marathi, and publishes to WhatsApp and Facebook."
+  },
+
+  "news": {
+    "_comment": "Configure RSS feeds and optional NewsAPI integration. Enable/disable individual sources via the 'enabled' flag.",
+
+    "rss_feeds": [
+      {
+        "name": "Times of India — Top Stories",
+        "url": "https://timesofindia.indiatimes.com/rssfeedstopstories.cms",
+        "language": "en",
+        "category": "general",
+        "enabled": true
+      },
+      {
+        "name": "NDTV — Top Stories",
+        "url": "https://feeds.feedburner.com/ndtvnews-top-stories",
+        "language": "en",
+        "category": "general",
+        "enabled": true
+      },
+      {
+        "name": "The Hindu — National",
+        "url": "https://www.thehindu.com/news/national/?service=rss",
+        "language": "en",
+        "category": "national",
+        "enabled": true
+      },
+      {
+        "name": "India Today",
+        "url": "https://www.indiatoday.in/rss/1206578",
+        "language": "en",
+        "category": "general",
+        "enabled": true
+      },
+      {
+        "name": "NDTV Sports",
+        "url": "https://feeds.feedburner.com/ndtvsports-latest",
+        "language": "en",
+        "category": "sports",
+        "enabled": false
+      },
+      {
+        "name": "Economic Times — Markets",
+        "url": "https://economictimes.indiatimes.com/markets/rssfeeds/1977021501.cms",
+        "language": "en",
+        "category": "business",
+        "enabled": false
+      },
+      {
+        "name": "Lokmat — Maharashtra (Marathi)",
+        "url": "https://www.lokmat.com/rss/",
+        "language": "mr",
+        "category": "regional",
+        "enabled": false
+      },
+      {
+        "name": "Maharashtra Times (Marathi)",
+        "url": "https://maharashtratimes.com/rss/",
+        "language": "mr",
+        "category": "regional",
+        "enabled": false
+      },
+      {
+        "name": "BBC Hindi",
+        "url": "https://feeds.bbci.co.uk/hindi/rss.xml",
+        "language": "hi",
+        "category": "international",
+        "enabled": false
+      },
+      {
+        "name": "AIR News — National",
+        "url": "https://newsonair.com/national.rss",
+        "language": "en",
+        "category": "national",
+        "enabled": false
+      }
+    ],
+
+    "newsapi": {
+      "enabled": false,
+      "api_key": "YOUR_NEWSAPI_KEY_HERE",
+      "endpoint": "https://newsapi.org/v2/top-headlines",
+      "country": "in",
+      "language": "en",
+      "categories": ["general", "technology", "sports", "business", "entertainment", "health", "science"],
+      "page_size": 10,
+      "sort_by": "publishedAt"
+    },
+
+    "fetch_timeout_seconds": 15,
+    "max_articles_per_source": 5,
+    "max_articles_per_run": 10,
+    "min_article_length_chars": 80,
+    "max_article_age_hours": 24,
+    "keywords_include": [],
+    "keywords_exclude": ["advertisement", "sponsored", "promo", "[Removed]"],
+    "categories_enabled": ["general", "national", "regional", "technology", "sports", "business", "entertainment", "health", "science", "international"],
+    "fetch_full_article": false,
+    "user_agent": "Mozilla/5.0 (compatible; NewsPublisherBot/1.0)"
+  },
+
+  "translation": {
+    "_comment": "Choose 'google_free' (no API key, rate-limited), 'google_cloud' (paid, reliable), or 'deepl' (paid).",
+    "enabled": true,
+    "service": "google_free",
+    "source_language": "auto",
+    "target_language": "mr",
+
+    "google_free": {
+      "endpoint": "https://translate.googleapis.com/translate_a/single",
+      "delay_between_requests_seconds": 0.5
+    },
+
+    "google_cloud": {
+      "api_key": "YOUR_GOOGLE_CLOUD_TRANSLATE_API_KEY",
+      "project_id": "YOUR_GCP_PROJECT_ID",
+      "endpoint": "https://translation.googleapis.com/language/translate/v2"
+    },
+
+    "deepl": {
+      "api_key": "YOUR_DEEPL_API_KEY",
+      "api_url": "https://api-free.deepl.com/v2/translate"
+    },
+
+    "translate_title": true,
+    "translate_summary": true,
+    "translate_full_content": false,
+    "max_chars_per_request": 5000,
+    "skip_already_marathi": true,
+    "fallback_to_original_on_error": true
+  },
+
+  "formatting": {
+    "_comment": "Control the look of messages sent to each platform.",
+
+    "whatsapp": {
+      "header_emoji": "📰",
+      "footer_emoji": "🔗",
+      "separator": "─────────────────",
+      "include_source_name": true,
+      "include_publish_time": true,
+      "include_url": true,
+      "include_category_tag": true,
+      "include_summary": true,
+      "max_summary_chars": 500,
+      "max_message_length": 4096,
+      "date_format": "%d %B %Y, %I:%M %p",
+      "timezone": "Asia/Kolkata"
+    },
+
+    "facebook": {
+      "header_emoji": "📰",
+      "add_hashtags": true,
+      "default_hashtags": ["#MarathiNews", "#LatestNews", "#मराठीबातम्या", "#Maharashtra"],
+      "category_hashtags": {
+        "general": ["#ताज्याबातम्या", "#GeneralNews"],
+        "national": ["#NationalNews", "#India", "#भारत"],
+        "technology": ["#TechNews", "#Technology", "#तंत्रज्ञान"],
+        "sports": ["#Sports", "#क्रीडा"],
+        "business": ["#Business", "#व्यापार"],
+        "entertainment": ["#Entertainment", "#मनोरंजन"],
+        "health": ["#Health", "#आरोग्य"],
+        "science": ["#Science", "#विज्ञान"],
+        "regional": ["#Maharashtra", "#महाराष्ट्र"],
+        "international": ["#WorldNews", "#जग"],
+        "national": ["#NationalNews", "#भारत"]
+      },
+      "include_url_in_post": true,
+      "include_image_url": true,
+      "link_preview": true,
+      "max_post_length": 63206
+    }
+  },
+
+  "whatsapp": {
+    "_comment": "WhatsApp Cloud API does not support sending to Groups directly. Use recipient_numbers to broadcast to individual contacts. For group-style delivery, add all group members' numbers here.",
+    "enabled": false,
+    "provider": "meta",
+
+    "meta": {
+      "phone_number_id": "YOUR_META_PHONE_NUMBER_ID",
+      "access_token": "YOUR_META_WHATSAPP_ACCESS_TOKEN",
+      "api_version": "v18.0",
+      "base_url": "https://graph.facebook.com",
+      "recipient_numbers": [
+        "+919876543210"
+      ],
+      "max_retries": 3,
+      "retry_delay_seconds": 5
+    },
+
+    "twilio": {
+      "account_sid": "YOUR_TWILIO_ACCOUNT_SID",
+      "auth_token": "YOUR_TWILIO_AUTH_TOKEN",
+      "from_number": "whatsapp:+14155238886",
+      "to_numbers": [
+        "whatsapp:+919876543210"
+      ],
+      "max_retries": 3,
+      "retry_delay_seconds": 5
+    },
+
+    "rate_limit": {
+      "messages_per_minute": 10,
+      "delay_between_recipients_seconds": 2
+    }
+  },
+
+  "facebook": {
+    "_comment": "Requires a Facebook Developer App with pages_manage_posts + pages_read_engagement permissions. Generate a long-lived Page Access Token.",
+    "enabled": false,
+    "page_id": "YOUR_FACEBOOK_PAGE_ID",
+    "access_token": "YOUR_FACEBOOK_PAGE_ACCESS_TOKEN",
+    "app_id": "YOUR_FACEBOOK_APP_ID",
+    "app_secret": "YOUR_FACEBOOK_APP_SECRET",
+    "api_version": "v18.0",
+    "base_url": "https://graph.facebook.com",
+    "publish_as_page": true,
+    "max_retries": 3,
+    "retry_delay_seconds": 5
+  },
+
+  "scheduler": {
+    "_comment": "schedule_type: 'interval' uses interval_minutes; 'cron' uses cron_expression.",
+    "enabled": true,
+    "schedule_type": "interval",
+    "interval_minutes": 120,
+    "cron_expression": "0 */2 * * *",
+    "timezone": "Asia/Kolkata",
+    "run_on_start": true,
+    "max_consecutive_failures": 5,
+    "failure_cooldown_minutes": 30
+  },
+
+  "storage": {
+    "data_dir": "data",
+    "published_db_file": "data/published_articles.json",
+    "dedup_enabled": true,
+    "dedup_window_hours": 48,
+    "max_db_entries": 10000
+  },
+
+  "logging": {
+    "level": "INFO",
+    "file": "logs/news_publisher.log",
+    "max_file_size_bytes": 10485760,
+    "backup_count": 5,
+    "console_output": true,
+    "format": "%(asctime)s [%(levelname)s] %(name)s — %(message)s",
+    "date_format": "%Y-%m-%d %H:%M:%S"
+  },
+
+  "notifications": {
+    "_comment": "Optional error-alert email. Requires an App Password for Gmail.",
+    "summary_log_on_success": true,
+    "on_error_email": {
+      "enabled": false,
+      "smtp_host": "smtp.gmail.com",
+      "smtp_port": 587,
+      "use_tls": true,
+      "username": "your@gmail.com",
+      "password": "YOUR_GMAIL_APP_PASSWORD",
+      "from_address": "your@gmail.com",
+      "to_addresses": ["admin@example.com"],
+      "subject_prefix": "[NewsPublisher]"
+    }
+  }
+}
